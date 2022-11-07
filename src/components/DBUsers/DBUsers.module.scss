@@ -1,0 +1,50 @@
+@import "../../sass/variables";
+.usersDashboard {
+  padding: 5rem 5%;
+  flex-grow: 1;
+  font-family: $f-work-sans;
+  h1 {
+    font-weight: 500;
+    font-size: 2.4rem;
+    line-height: 2.8rem;
+    color: #213f7d;
+    margin-bottom: 3rem;
+  }
+  .stats {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    width: 100%;
+    & > div {
+      // stat
+      background: #ffffff;
+      border: 1px solid rgba(33, 63, 125, 0.06);
+      box-shadow: 3px 5px 20px rgba(0, 0, 0, 0.04);
+      border-radius: 4px;
+      padding: 2rem 3rem;
+      width: 90%; //for width sammler than 240px
+      max-width: 24rem;
+      display: flex;
+      flex-direction: column;
+      row-gap: 1rem;
+      img {
+        width: 4rem;
+        height: 4rem;
+      }
+      h4 {
+        font-weight: 500;
+        font-size: 1.4rem;
+        line-height: 1.6rem;
+        text-transform: uppercase;
+        color: #545f7d;
+      }
+      p {
+        font-weight: 600;
+        font-size: 2.4rem;
+        line-height: 2.8rem;
+        text-transform: uppercase;
+        color: #213f7d;
+      }
+    }
+  }
+}
