@@ -1,0 +1,81 @@
+@import "../../sass/variables";
+.nav {
+  padding: 1rem 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-tracks: center;
+  .searchBox {
+    display: flex;
+    flex-basis: 30%;
+    background: #ffffff;
+    border-radius: 8px;
+    align-items: stretch;
+    overflow: hidden;
+    border: 1px solid hsla(220, 58%, 31%, 0.7);
+
+    input {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+      flex-grow: 1;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      font-size: 1.4rem;
+      line-height: 1.6rem;
+      font-family: $f-work-sans;
+
+      color: #545f7d;
+      font-weight: 400;
+      &:placeholder-shown {
+        opacity: 0.7;
+      }
+    }
+    button {
+      font-size: 1.6rem;
+      padding: 1rem;
+      background: #39cdcc;
+      color: #fff;
+    }
+  }
+  .rightPart {
+    display: flex;
+    align-items: center;
+
+    font-size: 1.6rem;
+    column-gap: 1.5rem;
+    a {
+      font-family: $f-roboto;
+      font-weight: 400;
+      line-height: 1.9rem;
+      text-decoration-line: underline;
+      color: #213f7d;
+      margin-right: 2rem;
+      cursor: pointer;
+
+    }
+    svg {
+      cursor: pointer;
+
+      color: #213f7d;
+    }
+
+    img {
+      border-radius: 50%;
+      width: 4.8rem;
+      height: auto;
+      cursor: pointer;
+    }
+    p {
+      font-family: $f-work-sans;
+      font-weight: 500;
+      line-height: 1.9rem;
+      color: #213f7d;
+      cursor: pointer;
+      img {
+        width: 1rem;
+        height: auto;
+        margin-left: 1rem;
+      }
+    }
+  }
+}
