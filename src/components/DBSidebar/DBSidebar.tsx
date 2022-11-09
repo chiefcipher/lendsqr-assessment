@@ -1,8 +1,7 @@
 import React, { ReactElement } from "react";
-import { Link, NavLink } from "react-router-dom";
+import {  NavLink } from "react-router-dom";
 import styles from "./DBSidebar.module.scss";
 import * as Icons from "./assets/index";
-import { Icon } from "@iconify/react";
 
 const { dbsidebar } = styles;
 interface btnInterface {
