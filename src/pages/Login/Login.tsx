@@ -37,6 +37,7 @@ const Login = (): JSX.Element => {
   };
   return (
     <div className={login}>
+        <img src={LendsqrLogo} alt="Lendsqr" />
       <div className={leftImgs}>
         <img src={LendsqrLogo} alt="Lendsqr" />
         <img src={LeftImg} alt="A colorful asset with lot of shapes" />

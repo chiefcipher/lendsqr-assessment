@@ -1,6 +1,9 @@
 @import "../../sass/variables";
+@import "../../sass/mixins";
+$bp-800 : 800px;
+
 .usersDashboard {
-  padding: 5rem 5%;
+  padding: 5rem 2.5%;
   flex-grow: 1;
   font-family: $f-work-sans;
   h1 {
@@ -15,6 +18,9 @@
     gap: 2rem;
     flex-wrap: wrap;
     width: 100%;
+
+    // display: grid ;
+    // grid-template-columns: repeat(auto-fit , minmax(24rem,1fr));
     & > div {
       // stat
       flex-grow: 1;
@@ -55,8 +61,16 @@
   box-shadow: 3px 5px 20px rgba(0, 0, 0, 0.04);
   border-radius: 4px;
   margin-top: 7rem;
-  padding: 4rem;
+  padding: 4rem 2.5rem;
   position: relative;
+  max-width: 900px;
+  width : 100% ;
+  overflow-x: scroll;
+  // -ms-overflow-style: none;
+  // scrollbar-width: none;
+  // &::-webkit-scrollbar {
+  //   display: none;
+  // }
 
   table {
     font-family: $f-work-sans;
@@ -68,6 +82,9 @@
       text-transform: uppercase;
 
       color: $c-primary-grey;
+      @include respond('max' , $bp-800) {
+        font-size: 1rem;
+      }
 
       span,
       img {
@@ -78,6 +95,11 @@
         width: 1.6rem;
         height: 1.6rem;
         margin-left: 1rem;
+        @include respond('max' , $bp-800) 
+        {
+        width: 1.3rem;
+        height : 1.3rem 
+        }
         cursor: pointer;
       }
     }
@@ -86,10 +108,16 @@
       font-size: 1.4rem;
       line-height: 1.6rem;
       color: $c-primary-grey;
-      padding: 1rem;
+      padding: 1rem 0.5rem;
+      @include respond('max' , $bp-800) {
+        font-size: 1.2rem;
+      }
       &:nth-of-type(1) {
         // oganizaton td
         text-transform: capitalize;
+        @include respond('max' , $bp-800){
+          @include generateElipses(20px)
+        }
       }
 
       &:nth-of-type(3) {
@@ -100,31 +128,41 @@
         text-overflow: ellipsis;
         // DID THIS TO AVOID TOO LONG HORIZONTAL TABLE
         max-width: 15rem;
+
+        @include respond('max' , $bp-800){
+          max-width: 10rem;;
+        }
+      }
+      &:nth-of-type(5),
+      &:nth-of-type(4) {
+        // date and phone td 
+        @include respond('max' , $bp-800){
+          @include generateElipses(10px)
+        }
       }
       &:nth-of-type(6) {
-// status
-        button{
+        // status
+        button {
           padding: 1rem;
           border-radius: 100px;
           text-transform: capitalize;
           &.pending {
-          color : #E9B200 ;
-          background: rgba(233, 178, 0,.1);
+            color: #e9b200;
+            background: rgba(233, 178, 0, 0.1);
+          }
+          &.inactive {
+            color: hsl(224, 20%, 41%);
+            background: hsla(224, 20%, 41%, 0.1);
+          }
+          &.active {
+            color: hsl(137, 60%, 51%);
+            background: hsla(137, 60%, 51%, 0.1);
+          }
+          &.blacklisted {
+            color: #e4033b;
+            background: hsla(345, 97%, 45%, 0.1);
+          }
         }
-        &.inactive {
-          color: hsl(224, 20%, 41%);
-          background: hsla(224, 20%, 41%,.1);
-          
-        }
-        &.active{
-          color: hsl(137, 60%, 51%);
-          background: hsla(137, 60%, 51%,.1);
-        }
-        &.blacklisted {
-          color: #E4033B;
-          background : hsla(345, 97%, 45%,.1)
-        }
-      }
       }
       &:nth-of-type(7) {
         // elipses td
@@ -174,6 +212,11 @@
     font-style: normal;
     line-height: 1.6rem;
 
+    @include respond('max' , $bp-800) {
+      font-size: 1.2rem;
+      line-height: 1.3rem;
+    }
+
     select {
       margin: 0 1rem;
       background: rgba(33, 63, 125, 0.1);
@@ -201,11 +244,25 @@
     color: $c-primary-grey;
     display: flex;
     column-gap: 0.8rem;
+    @include respond('max' , $bp-800) {
+      font-size: 1.2rem;
+      line-height: 1.3rem;
+    }
     button {
       width: 2.4rem;
       height: 2.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      @include respond('max' , $bp-800) {
+      width: 1.8em;
+      width: 1.8rem;
+
+      }
       img {
         pointer-events: none;
+        width :40%;
+        height :auto;
       }
       &:last-child,
       &:first-child {

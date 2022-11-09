@@ -12,6 +12,9 @@
 html {
   scroll-behavior: smooth;
   font-size: 62.5%; //10 /16px so 1rem=10px and 1.6rem =16px
+  @media screen and (max-width: 1000px) {
+    font-size: 50%;
+  }
 }
 
 body {
@@ -41,7 +44,7 @@ button {
   background: transparent;
   cursor: pointer;
 }
-select, 
+select,
 input {
   outline: none;
   border: none;

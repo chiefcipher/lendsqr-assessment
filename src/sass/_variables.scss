@@ -1,8 +1,15 @@
 // COLORS
 $c-primary: #39cdcc;
-$c-primary-grey : #545f7d ; 
+$c-primary-grey: #545f7d;
 // FONTS
 $f-avenir: "Avenir Next", "Work Sans", sans-serif;
 $f-work-sans: "Work Sans", "Avenir Next", sans-serif;
 $f-roboto: "Roboto", "Work Sans", sans-serif;
 $f-sf-compact: "SF Compact Text", "Work Sans", sans-serif;
+
+// BREAKPOINTS
+$bp-small: 576px;
+$bp-medium: 768px;
+$bp-large: 992px;
+$bp-extra-large: 1200px;
+$bp-xextra-large: 1400px;
