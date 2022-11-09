@@ -18,7 +18,7 @@ export type Guarantor = {
   address: string ; 
   firstName : string ; 
   gender : string ; 
-  lastname : string ; 
+  lastName : string ; 
   phoneNumber  : string ; 
   }
   

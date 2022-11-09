@@ -41,7 +41,7 @@
       font-weight: 400;
       font-size: 2rem;
       line-height: 2.7rem;
-      color: #545f7d;
+      color: $c-primary-grey;
       margin: 1rem 0 3rem 0;
     }
     form {
@@ -54,8 +54,8 @@
         width: fit-content;
         font-family: $f-avenir;
         font-weight: 600;
-        font-size: 1.2rem ;
-        line-height: 1.6rem ;
+        font-size: 1.2rem;
+        line-height: 1.6rem;
         text-align: center;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -73,7 +73,7 @@
         font-size: 1.4rem;
         line-height: 1.9rem;
 
-        color: #545f7d;
+        color: $c-primary-grey;
         padding: 1rem;
         margin: 1rem 0;
         background: transparent;
@@ -82,7 +82,7 @@
           opacity: 0.6;
         }
       }
-   
+
       button[type="button"] {
         // forgot password button
 

@@ -4,6 +4,7 @@ import Navigation from "../../containers/Navigation/Navigation";
 import DBSidebar from "../../components/DBSidebar/DBSidebar";
 import { Routes, Route } from "react-router";
 import { DBUsers } from "../../components/DBUsers/DBUsers";
+import { DBViewUser } from "../../components/DBViewUser/DBViewUser";
 const { dashboard } = styles;
 
 const Dashboard = (): ReactElement => {
@@ -12,9 +13,10 @@ const Dashboard = (): ReactElement => {
       <Navigation />
       <div className={dashboard}>
         <DBSidebar />
-        {/* TODO DB MAIN AREA COMES HERE TOO  */}
+        {/* MAIN AREA   */}
         <Routes>
-          <Route path="/users" element={<DBUsers />} />
+        <Route path="/users" element={<DBUsers />} />
+          <Route path="/users/:id" element={<DBViewUser />} />
           <Route path="*" element={<h2>Coming soon</h2>} />
         </Routes>
       </div>
