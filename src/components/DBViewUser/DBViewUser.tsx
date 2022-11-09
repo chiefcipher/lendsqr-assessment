@@ -26,7 +26,6 @@ export const DBViewUser = (): ReactElement => {
 
   const navigate = useNavigate();
   const { id } = useParams();
-  console.log(user);
   useEffect(() => {
     if (!user) {
       axios
