@@ -30,12 +30,11 @@ public length ;
     return this ; 
   }
 
-  date = (date:Date) =>{
-    console.log(date,'[DATE]')
+  date = (date:Date)  =>{
+    if (!date) return this ; 
     const yyyy = date.getFullYear()
     const mm = date.getMonth(); 
     const dd = date.getDate();
-    if (!date) return this ; 
     this.users = this.users.filter(user => {
       const createAt = new Date(user.createdAt);
 

@@ -1,19 +1,22 @@
-import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
+import React, {  ReactElement, useEffect, useState } from "react";
 import styles from "./DBUsers.module.scss";
-
+import { Filter, initFilterType } from "../Filter/Filter";
 import { User } from "./types";
 import * as Assets from "./assets";
 import axios, { AxiosError } from "axios";
 import Users from "./Users";
 import { useNavigate } from "react-router";
-import { boolean } from "yup";
+import { Seo } from "../Seo/Seo";
 const {
   usersDashboard,
   stats,
   usersTableContainer,
   bottomFilter,
   actions,
-  filter,
+  inactive,
+  active,
+  pending,
+  blacklisted,
 } = styles;
 
 interface stat {
@@ -21,6 +24,27 @@ interface stat {
   label: string;
   icon: string;
 }
+
+const customButtonClass = [inactive, active, blacklisted, pending];
+enum customButtonText {
+  inactive = 0,
+  active,
+  blacklisted,
+  pending,
+}
+// CUSTOM BUTTON TO RETURN PENDING, ACTIVE, BLACKLISTED OR INACTIVE STATUS
+const Button = ({ index }: { index: number }) => {
+  const determiner = index % 4;
+  // 0 - inactive
+  //1 -active
+  //2 -blacklisted
+  //3 -pending
+  return (
+    <button className={customButtonClass[determiner]}>
+      {customButtonText[determiner]}
+    </button>
+  );
+};
 const Stat = ({ value, icon, label }: stat) => {
   return (
     <div>
@@ -61,31 +85,15 @@ const formatDate = (date: Date): string => {
   const hours = hh >= 12 ? hh - 12 : hh;
   return `${mm} ${dd}, ${yyyy} ${hours}:${minutes} ${timeUnit}`;
 };
-type initFilterType = {
-  orgName: string;
-  username: string;
-  email: string;
-  date: string;
-  phoneNumber: string;
-  status: string;
-  beginFilter: boolean;
-};
-const initFilter: initFilterType = {
-  orgName: "",
-  username: "",
-  email: "",
-  date: "",
-  phoneNumber: "",
-  status: "",
-  beginFilter: false,
-};
+
 export const DBUsers = (): ReactElement => {
-  const [users, setUsers] = useState<User[]>([]);
+  const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+  const [users, setUsers] = useState<User[]>(storedUsers);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>(storedUsers);
   const [viewsPerPage, setViewsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewActions, setViewActions] = useState(-1);
   const [showFilter, setShowFilter] = useState(false);
-  const [filterValues, setFilterValues] = useState(initFilter);
   const navigate = useNavigate();
   useEffect(() => {
     if (!users || users.length === 0) {
@@ -93,7 +101,9 @@ export const DBUsers = (): ReactElement => {
         .get("https://6270020422c706a0ae70b72c.mockapi.io/lendsqr/api/v1/users")
         .then((res: GetUserResponse) => {
           const { data } = res;
+          localStorage.setItem("users", JSON.stringify(data));
           setUsers(data);
+          setFilteredUsers(data);
         })
         .catch((err: AxiosError) => console.log(err));
       // TODO ADD ERROR HANDLING
@@ -102,15 +112,7 @@ export const DBUsers = (): ReactElement => {
   // TOGGLES OPEN AND CLOSE FILTER PANEL
   const handleFilter = () => setShowFilter((x) => !x);
   // SETS VALUES FOR FILTER INPUT FIELEDS
-  const handleFilterChange = (
-    e: ChangeEvent<HTMLSelectElement | HTMLInputElement>
-  ) => {
-    setFilterValues((prevValues) => ({
-      ...prevValues,
-      beginFilter:false,
-      [e?.target.name || "none"]: e?.target.value,
-    }));
-  };
+
   const handlePageChange = (event: React.MouseEvent<HTMLButtonElement>) => {
     const { dataset } = event.target as HTMLButtonElement;
     const pagenum = dataset.pagenum;
@@ -134,283 +136,192 @@ export const DBUsers = (): ReactElement => {
     }
   };
 
+  const activateFilter = (values: initFilterType) => {
+    if (showFilter) {
+      let newUsers = new Users(users)
+        .orgName(values.orgName)
+        .username(values.username)
+        .email(values.email)
+        .phoneNumber(values.phoneNumber);
+      if (values.date) {
+        // check if valid date before filter
+        newUsers = newUsers.date(new Date(values.date));
+      }
 
+      setFilteredUsers(newUsers.users);
+    }
+  };
 
-  let filteredUsers = new Users(users).paginate(viewsPerPage, currentPage - 1);
-  if (filterValues.beginFilter) {
-    filteredUsers = filteredUsers
-      .orgName(filterValues.orgName)
-      .username(filterValues.username)
-      .email(filterValues.email)
-      .phoneNumber(filterValues.phoneNumber)
-      .date(new Date(filterValues.date));
-  }
+  const paginatedUsers = new Users(showFilter ? filteredUsers : users).paginate(
+    viewsPerPage,
+    currentPage - 1
+  );
+
   // USE THIS TO DETERMINE BUTTONS AVAILABLE FOR FILTER
-  const possiblePageNums = Math.round(length / viewsPerPage);
+  const possiblePageNums = Math.round(users.length / viewsPerPage);
   return (
-    <div className={usersDashboard}>
-      <h1>Users</h1>
-      <div className={stats}>
-        <Stat label="Users" value={"2,453"} icon={Assets.UsersImg} />
-        <Stat
-          label="Active Users"
-          value={"2,453"}
-          icon={Assets.ActiveUsersImg}
-        />
-        <Stat
-          label="Users with loans"
-          value={"12,453"}
-          icon={Assets.LoanUsersImg}
-        />
-        <Stat
-          label="Users with savings"
-          value={"2,453"}
-          icon={Assets.SavingsUsersImg}
-        />
-      </div>
-      <div className={usersTableContainer}>
-        {showFilter && (
-          <div className={filter}>
-            <p>
-              <span>Organization</span>
-              <select
-                
-                name={"orgName"}
-                value={filterValues.orgName}
-                onChange={handleFilterChange}
-              >
-                {/*
-                 OPTIONS ARE SOME VALID ORGNIZATION FROM API RESPONSE 
-                  THEY TYPICALLY WOULD BE QUERIED FROM ANOTER ENDPOINT 
-                  */}
-                <option value="" disabled>
-                  Select
-                </option>
-                <option value="Aliquam-Velit-Ab">Aliquam-Velit-Ab</option>
-                <option value="Labore-Dolor-Et">Labore-Dolor-Et</option>
-                <option value="Accusamus-Minima-Repudiandae">
-                  Accusamus-Minima-Repudiandae
-                </option>
-                <option value="Natus-Harum-Unde">Natus-Harum-Unde</option>
-                <option value="Quas-Et-Ut">Quas-Et-Ut</option>
-                <option value="Accusantium-Voluptatem-Voluptate">
-                  Accusantium-Voluptatem-Voluptate
-                </option>
-                <option value='Tempore-Laudantium-Aut'>Tempore-Laudantium-Aut</option>
-              </select>
-            </p>
-
-            <p>
-              <span>Username</span>
-              <input
-                type="text"
-                name="username"
-                value={filterValues.username}
-                placeholder="User"
-                onChange={handleFilterChange}
-              />
-            </p>
-            <p>
-              <span>Email</span>
-              <input
-                type="email"
-                placeholder="Email"
-                name="email"
-                value={filterValues.email}
-                onChange={handleFilterChange}
-              />
-            </p>
-            <p>
-              <span>Date</span>
-              <input
-                type="date"
-                placeholder="Date"
-                name="date"
-                value={filterValues.date}
-                onChange={handleFilterChange}
-              />
-            </p>
-
-            <p>
-              <span>Phone Number</span>
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                value={filterValues.phoneNumber}
-                name="phoneNumber"
-                onChange={handleFilterChange}
-              />
-            </p>
-
-            <p>
-              <span>Status</span>
-              <select
-                
-                name="status"
-                value={filterValues.status}
-                onChange={handleFilterChange}
-              >
-                {/*
-                 OPTIONS ARE SOME VALID ORGNIZATION FROM API RESPONSE 
-                  THEY TYPICALLY WOULD BE QUERIED FROM ANOTER ENDPOINT 
-                  */}
-                <option value="" disabled>
-                  Select
-                </option>
-                <option value="pending">Pending</option>
-                <option value="blacklisted">Blacklisted</option>
-                <option value="inactive">Inactive</option>
-                <option value="active">Active</option>
-              </select>
-            </p>
-            <p>
-              <button onClick={() => setFilterValues(initFilter)}>Reset</button>
-              <button
-                onClick={() =>
-                  setFilterValues((prev) => ({
-                    ...prev,
-                    beginFilter: true,
-                  }))
-                }
-              >
-                Filter
-              </button>
-            </p>
-          </div>
-        )}
-        <table>
-          <thead>
-            <tr>
-              <th>
-                <span>Orgnization</span>
-                <img
-                  src={Assets.FilterImg}
-                  alt="Filter"
-                  onClick={handleFilter}
-                />
-              </th>
-
-              <th>
-                <span>Username</span>
-                <img
-                  src={Assets.FilterImg}
-                  onClick={handleFilter}
-                  alt="Filter"
-                />
-              </th>
-              <th>
-                <span>Email</span>
-                <img
-                  onClick={handleFilter}
-                  src={Assets.FilterImg}
-                  alt="Filter"
-                />
-              </th>
-              <th>
-                <span>Phone Number</span>
-                <img
-                  onClick={handleFilter}
-                  src={Assets.FilterImg}
-                  alt="Filter"
-                />
-              </th>
-              <th>
-                <span>Date Joined</span>
-                <img
-                  onClick={handleFilter}
-                  src={Assets.FilterImg}
-                  alt="Filter"
-                />
-              </th>
-              <th>
-                <span>Status</span>
-                <img
-                  onClick={handleFilter}
-                  src={Assets.FilterImg}
-                  alt="Filter"
-                />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {!filteredUsers
-              ? null
-              : filteredUsers.users.map((user, i) => (
-                  <tr key={user.email + i}>
-                    <td>{user.orgName}</td>
-                    <td>{user.userName}</td>
-                    <td>{user.email}</td>
-                    <td>{user.phoneNumber}</td>
-                    <td>{formatDate(user.createdAt)}</td>
-                    <td>{"pending"}</td>
-                    <td>
-                      <img
-                        src={Assets.VerticalEmpisesImg}
-                        onClick={() => setViewActions(i)}
-                        alt="Option"
-                      />
-                      {viewActions === i && (
-                        <div className={actions}>
-                          <p onClick={() => navigate(`${user.id}`)}>
-                            <img src={Assets.ViewImg} alt="view user" />
-                            <span>View Details </span>
-                          </p>
-                          <p>
-                            <img src={Assets.BlacklistImg} alt="view user" />
-                            <span>Blacklist User </span>
-                          </p>
-                          <p>
-                            <img src={Assets.ActivateImg} alt="view user" />
-                            <span>Activate User</span>
-                          </p>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-          </tbody>
-        </table>
-      </div>
-      <div className={bottomFilter}>
-        <div>
-          {/* LEFT PART  */}
-          <span>Showing</span>
-          <select
-            name="filter"
-            value={viewsPerPage}
-            onChange={(e) => setViewsPerPage(Number(e.target.value))}
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-          <span>{`out of ${length}`}</span>
+    <>
+      <Seo title={"Users"} description="Users list" />
+      <div className={usersDashboard}>
+        <h1>Users</h1>
+        <div className={stats}>
+          <Stat label="Users" value={"2,453"} icon={Assets.UsersImg} />
+          <Stat
+            label="Active Users"
+            value={"2,453"}
+            icon={Assets.ActiveUsersImg}
+          />
+          <Stat
+            label="Users with loans"
+            value={"12,453"}
+            icon={Assets.LoanUsersImg}
+          />
+          <Stat
+            label="Users with savings"
+            value={"2,453"}
+            icon={Assets.SavingsUsersImg}
+          />
         </div>
-        <div>
-          {/* RIGHT PART */}
-          <button
-            onClick={() => handleBackAndForwardBtn("back", possiblePageNums)}
-          >
-            <img src={Assets.LeftCaretImg} alt="Back" />
-          </button>
+        <div className={usersTableContainer}>
+          {showFilter && <Filter activateFilter={activateFilter} />}
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  <span>Orgnization</span>
+                  <img
+                    src={Assets.FilterImg}
+                    alt="Filter"
+                    onClick={handleFilter}
+                  />
+                </th>
 
-          {[...Array(possiblePageNums)].map((_, index) => (
-            <button
-              data-pagenum={index + 1}
-              key={"filterBtn" + index}
-              onClick={handlePageChange}
+                <th>
+                  <span>Username</span>
+                  <img
+                    src={Assets.FilterImg}
+                    onClick={handleFilter}
+                    alt="Filter"
+                  />
+                </th>
+                <th>
+                  <span>Email</span>
+                  <img
+                    onClick={handleFilter}
+                    src={Assets.FilterImg}
+                    alt="Filter"
+                  />
+                </th>
+                <th>
+                  <span>Phone Number</span>
+                  <img
+                    onClick={handleFilter}
+                    src={Assets.FilterImg}
+                    alt="Filter"
+                  />
+                </th>
+                <th>
+                  <span>Date Joined</span>
+                  <img
+                    onClick={handleFilter}
+                    src={Assets.FilterImg}
+                    alt="Filter"
+                  />
+                </th>
+                <th>
+                  <span>Status</span>
+                  <img
+                    onClick={handleFilter}
+                    src={Assets.FilterImg}
+                    alt="Filter"
+                  />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {!paginatedUsers
+                ? null
+                : paginatedUsers.users.map((user, i) => (
+                    <tr key={user.email + i}>
+                      <td>{user.orgName}</td>
+                      <td>{user.userName}</td>
+                      <td>{user.email}</td>
+                      <td>{user.phoneNumber}</td>
+                      <td>{formatDate(user.createdAt)}</td>
+                      <td>
+                        <Button index={i} />
+                      </td>
+                      <td>
+                        <img
+                          src={Assets.VerticalEmpisesImg}
+                          onClick={() => setViewActions(i)}
+                          alt="Option"
+                        />
+                        {viewActions === i && (
+                          <div className={actions}>
+                            <p onClick={() => navigate(`${user.id}`)}>
+                              <img src={Assets.ViewImg} alt="view user" />
+                              <span>View Details </span>
+                            </p>
+                            <p>
+                              <img src={Assets.BlacklistImg} alt="view user" />
+                              <span>Blacklist User </span>
+                            </p>
+                            <p>
+                              <img src={Assets.ActivateImg} alt="view user" />
+                              <span>Activate User</span>
+                            </p>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+            </tbody>
+          </table>
+        </div>
+        <div className={bottomFilter}>
+          <div>
+            {/* LEFT PART  */}
+            <span>Showing</span>
+            <select
+              name="filter"
+              value={viewsPerPage}
+              onChange={(e) => setViewsPerPage(Number(e.target.value))}
             >
-              {index + 1}
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span>{`out of ${length}`}</span>
+          </div>
+          <div>
+            {/* RIGHT PART */}
+            <button
+              onClick={() => handleBackAndForwardBtn("back", possiblePageNums)}
+            >
+              <img src={Assets.LeftCaretImg} alt="Back" />
             </button>
-          ))}
-          <button
-            onClick={() => handleBackAndForwardBtn("forward", possiblePageNums)}
-          >
-            <img src={Assets.LeftCaretImg} alt="Forward" />
-          </button>
+
+            {[...Array(possiblePageNums)].map((_, index) => (
+              <button
+                data-pagenum={index + 1}
+                key={"filterBtn" + index}
+                onClick={handlePageChange}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              onClick={() =>
+                handleBackAndForwardBtn("forward", possiblePageNums)
+              }
+            >
+              <img src={Assets.LeftCaretImg} alt="Forward" />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

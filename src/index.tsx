@@ -8,11 +8,13 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Router>
+      {/* REMOVE STRICTMODE TO AVOID DOUBLE CONSOLE.LOG 
+      ALSO REMOVE STRICTMODE TO AVOID HELMET SEO ERROR */}
       <App />
     </Router>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
 // TODO ADD HELMET
 // TODO DOWNLOAD AVERNIR FONT

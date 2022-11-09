@@ -4,6 +4,7 @@ import { User } from "./types";
 import * as Assets from "./assets";
 import axios, { AxiosError } from "axios";
 import { useNavigate, useParams } from "react-router";
+import { Seo } from "../Seo/Seo";
 const {
   userDashboard,
   header,
@@ -42,6 +43,11 @@ export const DBViewUser = (): ReactElement => {
   });
 
   return (
+    <>
+<Seo  
+title={`Viewing ${user?.profile.firstName} ${user?.profile.lastName}`}
+description={`View detailed user page`}
+/>
     <div className={userDashboard}>
       <div className={header}>
         <p onClick={() => navigate(-1)}>
@@ -56,7 +62,7 @@ export const DBViewUser = (): ReactElement => {
       </div>
       <div className={topView}>
         <div className={topViewMains}>
-          <p>
+          <div>
             <img src={user?.profile.avatar} alt={user?.userName} />
             <p>
               <span>
@@ -64,20 +70,20 @@ export const DBViewUser = (): ReactElement => {
               </span>
               <span>{user?.accountNumber}</span>
             </p>
-          </p>
-          <p>
+          </div>
+          <div>
             <span>User’s Tier</span>
             <p>
               <img src={Assets.FilledStar} alt="Filled star" />
               <img src={Assets.TransparetStar} alt="No star" />
               <img src={Assets.TransparetStar} alt="No star" />
             </p>
-          </p>
-          <p>
+          </div>
+          <div>
             <span> ₦{user?.accountBalance}</span>
 
             <span>{user?.accountNumber}/Providus bank</span>
-          </p>
+          </div>
         </div>
         <div className={topViewBtns}>
           {/* this buttons would navigate to /route and implement ui eventually */}
@@ -223,5 +229,8 @@ export const DBViewUser = (): ReactElement => {
         </div>
       </div>
     </div>
+
+    </>
+
   );
 };

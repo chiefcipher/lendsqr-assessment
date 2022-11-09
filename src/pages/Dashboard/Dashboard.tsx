@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import styles from "./Dashboard.module.scss";
 import Navigation from "../../containers/Navigation/Navigation";
 import DBSidebar from "../../components/DBSidebar/DBSidebar";
-import { Routes, Route } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import { DBUsers } from "../../components/DBUsers/DBUsers";
 import { DBViewUser } from "../../components/DBViewUser/DBViewUser";
 const { dashboard } = styles;
@@ -17,7 +17,8 @@ const Dashboard = (): ReactElement => {
         <Routes>
         <Route path="/users" element={<DBUsers />} />
           <Route path="/users/:id" element={<DBViewUser />} />
-          <Route path="*" element={<h2>Coming soon</h2>} />
+          <Route path='/' element={<Navigate to='users' />} />
+          <Route path="*" element={<h2>Coming soon or 404 not found</h2>} />
         </Routes>
       </div>
     </>
