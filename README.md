@@ -11,3 +11,8 @@
 ## Generate build file
 - yarn install 
 - yarn run build
+
+## Routes implemented
+- /login
+- /dashboard/users
+- /dashboard/users/:id
